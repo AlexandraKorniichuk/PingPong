@@ -2,7 +2,6 @@
 
 
 #include "PlatformPawn.h"
-#include "Engine/Engine.h"
 #include "Net/UnrealNetwork.h"
 
 APlatformPawn::APlatformPawn()
@@ -31,7 +30,6 @@ void APlatformPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void APlatformPawn::TryMovePlatform(FVector MouseLocation)
 {
-	GEngine->AddOnScreenDebugMessage(-1,2,FColor::Purple,FString::Printf(TEXT("Hello %s"),*MouseLocation.ToString()));
 	float MouseY = MouseLocation.Y;
 	if (MouseY >= -Limit && MouseY <= Limit)
 	{
