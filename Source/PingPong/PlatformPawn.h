@@ -23,12 +23,26 @@ protected:
 	UPROPERTY(EditAnywhere, Category="PlatformYLimit")
 	float Limit;
 
+	UFUNCTION()
+	void OnRep_MeshLocation();
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(Server, Unreliable)
-	void MovePlatform(FVector MouseLocation);
+	void TryMovePlatform(FVector MouseLocation);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerMovePlatform(FVector MouseLocation);
 
+	UPROPERTY(ReplicatedUsing = OnRep_MeshLocation)
+	FVector MeshLocation;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
+	bool IsInverted;
+
+	float GetYLocation(float MouseY);
 };

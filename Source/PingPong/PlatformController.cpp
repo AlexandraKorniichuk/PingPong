@@ -24,7 +24,7 @@ void APlatformController::Tick(float DeltaTime)
 		FVector Location = FVector::Zero();
 		FVector Direction = FVector::Zero();
 		DeprojectMousePositionToWorld(Location, Direction);
-		Platform->MovePlatform(-Location);
+		Platform->ServerMovePlatform(Location);
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "PlatformPawn.h"
 #include "Engine/Engine.h"
+#include "Net/UnrealNetwork.h"
 
 APlatformPawn::APlatformPawn()
 {
@@ -14,6 +15,7 @@ void APlatformPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	IsInverted = GetActorRotation().Yaw > 1;
 }
 
 void APlatformPawn::Tick(float DeltaTime)
@@ -27,21 +29,48 @@ void APlatformPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-
-void APlatformPawn::MovePlatform_Implementation(FVector MouseLocation)
+void APlatformPawn::TryMovePlatform(FVector MouseLocation)
 {
 	GEngine->AddOnScreenDebugMessage(-1,2,FColor::Purple,FString::Printf(TEXT("Hello %s"),*MouseLocation.ToString()));
 	float MouseY = MouseLocation.Y;
 	if (MouseY >= -Limit && MouseY <= Limit)
 	{
-		//FVector MeshLocation = Mesh->GetRelativeLocation();
-		//Mesh->SetRelativeLocation(FVector(MeshLocation.X, MouseY * 100, MeshLocation.Z));
-		FVector ActorLocation = GetActorLocation();
-		SetActorLocation(FVector(ActorLocation.X, MouseY * 100, ActorLocation.Z));
+		FVector CurrentMeshLocation = Mesh->GetRelativeLocation();
+		MeshLocation = FVector(CurrentMeshLocation.X, GetYLocation(MouseY), CurrentMeshLocation.Z);
+		Mesh->SetRelativeLocation(MeshLocation);
 	}
-	if(GetLocalRole())
+}
+
+void APlatformPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlatformPawn, MeshLocation);
+}
+
+float APlatformPawn::GetYLocation(float MouseY)
+{
+	if (IsInverted)
 	{
-		
+		return -MouseY * 100;
+	}
+	return MouseY * 100;
+}
+
+
+void APlatformPawn::ServerMovePlatform_Implementation(FVector MouseLocation)
+{
+	if (HasAuthority())
+	{
+		TryMovePlatform(MouseLocation);
+	}
+}
+
+void APlatformPawn::OnRep_MeshLocation()
+{
+	if (Mesh)
+	{
+		Mesh->SetRelativeLocation(MeshLocation);
 	}
 }
 
