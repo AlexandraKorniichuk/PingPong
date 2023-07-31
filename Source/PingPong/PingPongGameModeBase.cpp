@@ -44,9 +44,9 @@ void APingPongGameModeBase::TakeFreeGate(APlatformController* Controller)
 	for (int i = FoundGates.Num() - 1; i >= 0; i--)
 	{
 		AGate* FreeGate = Cast<AGate>(FoundGates[i]);
-		if (FreeGate->Controller == nullptr)
+		if (FreeGate->PlayerController == nullptr)
 		{
-			FreeGate->Controller = Controller;
+			FreeGate->PlayerController = Controller;
 			break;
 		}
 	}

@@ -5,9 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PlatformPawn.h"
+#include "Blueprint/UserWidget.h"
 #include "PlatformController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FScoreEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FScoreEvent, int, Score, int, OtherScore);
 
 UCLASS()
 class PINGPONG_API APlatformController : public APlayerController
@@ -31,13 +32,21 @@ private:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	void IncreaseScore();
+	int GetScore() const;
+	
+	void UpdateScore(int OtherScore, bool DoIncrease);
 	
 	UFUNCTION(BlueprintCallable, Client, Unreliable)
-	void UpdateScore();
+	void ServerUpdateScore(int OtherScore);
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category="Score events")
 	FScoreEvent OnScoreUpdated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI")
+	UUserWidget* Widget;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> WidgetClass;
 	
 };

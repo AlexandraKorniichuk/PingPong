@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Ball.h"
 #include "PlatformController.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
@@ -29,6 +30,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Collision")
 	UBoxComponent* Trigger;
 
-	APlatformController* Controller;
+	APlatformController* PlayerController;
 
+private:
+	ABall* Ball;
 };

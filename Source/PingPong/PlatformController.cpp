@@ -2,6 +2,7 @@
 
 
 #include "PlatformController.h"
+
 #include "Net/UnrealNetwork.h"
 
 APlatformController::APlatformController()
@@ -14,6 +15,14 @@ void APlatformController::BeginPlay()
 	Super::BeginPlay();
 
 	Platform = Cast<APlatformPawn>(GetPawn());
+	if (GetLocalPlayer())
+	{
+		if (Widget == nullptr)
+		{
+			Widget = CreateWidget<UUserWidget>(this, WidgetClass);
+			Widget->AddToViewport(0);
+		}
+	}
 }
 
 void APlatformController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -36,14 +45,24 @@ void APlatformController::Tick(float DeltaTime)
 	}
 }
 
-void APlatformController::IncreaseScore()
+int APlatformController::GetScore() const
 {
-	Score++;
-	UpdateScore();
+	return Score;
 }
 
-void APlatformController::UpdateScore_Implementation()
+void APlatformController::UpdateScore(int OtherScore, bool DoIncrease)
 {
-	OnScoreUpdated.Broadcast();
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString::Printf(TEXT("Increase %d"), Score));
+	if (DoIncrease)
+	{
+		Score++;
+	}
+	ServerUpdateScore(OtherScore);
+}
+
+void APlatformController::ServerUpdateScore_Implementation(int OtherScore)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString::Printf(TEXT("Update %d"), Score));
+	OnScoreUpdated.Broadcast(Score, OtherScore);
 }
 

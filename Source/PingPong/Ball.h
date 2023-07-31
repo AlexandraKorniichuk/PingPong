@@ -7,7 +7,7 @@
 #include "Ball.generated.h"
 
 UCLASS()
-class PINGPONG_API ABall : public AActor
+class PINGPONG_API ABall : public APawn
 {
 	GENERATED_BODY()
 	
@@ -20,5 +20,8 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	
+	void ResetLocation();
+
+private:
+	FVector StartLocation;
 };
