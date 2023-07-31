@@ -26,7 +26,7 @@ private:
 	APlatformPawn* Platform;
 
 	UPROPERTY(Replicated)
-	int Score;
+	int Score = 0;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -40,7 +40,7 @@ public:
 	void UpdateScore(int OtherScore, bool DoIncrease);
 	
 	UFUNCTION(BlueprintCallable, Client, Unreliable)
-	void ClientUpdateScore(int OtherScore);
+	void ClientUpdateScore(int PlayerScore, int OtherScore);
 
 	void UpdateUI();
 

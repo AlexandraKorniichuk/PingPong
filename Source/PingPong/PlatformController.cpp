@@ -40,7 +40,7 @@ void APlatformController::CreateWidgetIfNull()
 void APlatformController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (Platform)
 	{
 		FVector Location = FVector::Zero();
@@ -57,12 +57,11 @@ int APlatformController::GetScore() const
 
 void APlatformController::UpdateScore(int OtherScore, bool DoIncrease)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString::Printf(TEXT("Increase %d"), Score));
 	if (DoIncrease)
 	{
 		Score++;
 	}
-	ClientUpdateScore(OtherScore);
+	ClientUpdateScore(Score, OtherScore);
 }
 
 void APlatformController::UpdateUI()
@@ -79,9 +78,10 @@ void APlatformController::ClientUpdateUI_Implementation()
 	OnStart.Broadcast();
 }
 
-void APlatformController::ClientUpdateScore_Implementation(int OtherScore)
+void APlatformController::ClientUpdateScore_Implementation(int PlayerScore, int OtherScore)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString::Printf(TEXT("Update %d"), Score));
-	OnScoreUpdated.Broadcast(Score, OtherScore);
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Cyan, FString::Printf(TEXT("Client s %d"), Score));
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Cyan, FString::Printf(TEXT("Client p %d"), PlayerScore));
+	OnScoreUpdated.Broadcast(PlayerScore, OtherScore);
 }
 
