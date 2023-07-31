@@ -6,6 +6,11 @@
 #include "Gate.h"
 #include "Kismet/GameplayStatics.h"
 
+void APingPongGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 AActor* APingPongGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 {
 	TArray<AActor*> FoundStarts;
@@ -25,15 +30,15 @@ AActor* APingPongGameModeBase::ChoosePlayerStart_Implementation(AController* Pla
 void APingPongGameModeBase::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
-
-	ConnectedAmount++;
 	
 	APlatformController* Controller = Cast<APlatformController>(NewPlayer);
+	Players.Add(Controller);
+	
 	TakeFreeGate(Controller);
 
-	if (ConnectedAmount == 2)
+	if (Players.Num() == 2)
 	{
-		
+		UpdatePLayersUI();
 	}
 }
 
@@ -49,5 +54,13 @@ void APingPongGameModeBase::TakeFreeGate(APlatformController* Controller)
 			FreeGate->PlayerController = Controller;
 			break;
 		}
+	}
+}
+
+void APingPongGameModeBase::UpdatePLayersUI()
+{
+	for(auto Player : Players)
+	{
+		Player->UpdateUI();
 	}
 }

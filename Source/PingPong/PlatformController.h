@@ -9,6 +9,7 @@
 #include "PlatformController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FScoreEvent, int, Score, int, OtherScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartEvent);
 
 UCLASS()
 class PINGPONG_API APlatformController : public APlayerController
@@ -29,6 +30,8 @@ private:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void CreateWidgetIfNull();
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -37,8 +40,15 @@ public:
 	void UpdateScore(int OtherScore, bool DoIncrease);
 	
 	UFUNCTION(BlueprintCallable, Client, Unreliable)
-	void ServerUpdateScore(int OtherScore);
+	void ClientUpdateScore(int OtherScore);
 
+	void UpdateUI();
+
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientUpdateUI();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category="Start events")
+	FStartEvent OnStart;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category="Score events")
 	FScoreEvent OnScoreUpdated;

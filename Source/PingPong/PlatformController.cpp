@@ -17,11 +17,7 @@ void APlatformController::BeginPlay()
 	Platform = Cast<APlatformPawn>(GetPawn());
 	if (GetLocalPlayer())
 	{
-		if (Widget == nullptr)
-		{
-			Widget = CreateWidget<UUserWidget>(this, WidgetClass);
-			Widget->AddToViewport(0);
-		}
+		CreateWidgetIfNull();
 	}
 }
 
@@ -30,6 +26,15 @@ void APlatformController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlatformController, Score);
+}
+
+void APlatformController::CreateWidgetIfNull()
+{
+	if (Widget == nullptr)
+	{
+		Widget = CreateWidget<UUserWidget>(this, WidgetClass);
+		Widget->AddToViewport(0);
+	}
 }
 
 void APlatformController::Tick(float DeltaTime)
@@ -57,10 +62,24 @@ void APlatformController::UpdateScore(int OtherScore, bool DoIncrease)
 	{
 		Score++;
 	}
-	ServerUpdateScore(OtherScore);
+	ClientUpdateScore(OtherScore);
 }
 
-void APlatformController::ServerUpdateScore_Implementation(int OtherScore)
+void APlatformController::UpdateUI()
+{
+	ClientUpdateUI();
+}
+
+void APlatformController::ClientUpdateUI_Implementation()
+{
+	if(Widget == nullptr)
+	{
+		CreateWidgetIfNull();
+	}
+	OnStart.Broadcast();
+}
+
+void APlatformController::ClientUpdateScore_Implementation(int OtherScore)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString::Printf(TEXT("Update %d"), Score));
 	OnScoreUpdated.Broadcast(Score, OtherScore);
