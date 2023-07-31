@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlatformController.h"
 #include "GameFramework/GameModeBase.h"
 #include "PingPongGameModeBase.generated.h"
 
@@ -16,5 +17,11 @@ class PINGPONG_API APingPongGameModeBase : public AGameModeBase
 
 private:
 	AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	void OnPostLogin(AController* NewPlayer) override;
+
+	void TakeFreeGate(APlatformController* Controller);
+
+	int ConnectedAmount = 0;
 	
 };

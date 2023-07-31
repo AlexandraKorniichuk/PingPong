@@ -2,6 +2,7 @@
 
 
 #include "PlatformController.h"
+#include "Net/UnrealNetwork.h"
 
 APlatformController::APlatformController()
 {
@@ -15,6 +16,13 @@ void APlatformController::BeginPlay()
 	Platform = Cast<APlatformPawn>(GetPawn());
 }
 
+void APlatformController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlatformController, Score);
+}
+
 void APlatformController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -26,5 +34,16 @@ void APlatformController::Tick(float DeltaTime)
 		DeprojectMousePositionToWorld(Location, Direction);
 		Platform->ServerMovePlatform(Location);
 	}
+}
+
+void APlatformController::IncreaseScore()
+{
+	Score++;
+	UpdateScore();
+}
+
+void APlatformController::UpdateScore_Implementation()
+{
+	OnScoreUpdated.Broadcast();
 }
 

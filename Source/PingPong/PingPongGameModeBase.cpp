@@ -3,7 +3,7 @@
 
 #include "PingPongGameModeBase.h"
 #include "FreePlayerStart.h"
-#include "ToolBuilderUtil.h"
+#include "Gate.h"
 #include "Kismet/GameplayStatics.h"
 
 AActor* APingPongGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
@@ -20,4 +20,34 @@ AActor* APingPongGameModeBase::ChoosePlayerStart_Implementation(AController* Pla
 		}
 	}
 	return Super::ChoosePlayerStart_Implementation(Player);
+}
+
+void APingPongGameModeBase::OnPostLogin(AController* NewPlayer)
+{
+	Super::OnPostLogin(NewPlayer);
+
+	ConnectedAmount++;
+	
+	APlatformController* Controller = Cast<APlatformController>(NewPlayer);
+	TakeFreeGate(Controller);
+
+	if (ConnectedAmount == 2)
+	{
+		
+	}
+}
+
+void APingPongGameModeBase::TakeFreeGate(APlatformController* Controller)
+{
+	TArray<AActor*> FoundGates;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGate::StaticClass(), FoundGates);
+	for (int i = FoundGates.Num() - 1; i >= 0; i--)
+	{
+		AGate* FreeGate = Cast<AGate>(FoundGates[i]);
+		if (FreeGate->Controller == nullptr)
+		{
+			FreeGate->Controller = Controller;
+			break;
+		}
+	}
 }
